@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,10 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'spin-the-wheel';
+
+  constructor(private themeService: ThemeService) {}
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 }
