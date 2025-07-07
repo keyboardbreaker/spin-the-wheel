@@ -1,25 +1,28 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { GameResultService } from '../../services/game-result.service';
 
 @Component({
     standalone: true,
     selector: 'app-result',
-    imports: [CommonModule],
+    imports: [],
     template: `
-        <div class="h-screen flex flex-col items-center justify-center gap-6 border-4 border-indigo-500 rounded-lg p-8">
+        <section class="h-screen flex flex-col items-center justify-center gap-6 border-4 border-indigo-500 rounded-lg p-8">
             <h1 class="text-3xl font-bold">Congratulations!</h1>
-
-            <button (click)="restart()" class="mt-6 px-6 py-2 bg-blue-500 text-white rounded">
-                Play Again
+            <p class="text-xl">You won: <span class="font-semibold">{{ gameResultService.result() }}</span></p>
+            <p class="text-lg">Thank you for playing!</p>
+            <button (click)="goToWelcomePage()" class="app-button">
+                Play Again?
             </button>
-        </div>
+        </section>
     `
 })
 export class ResultPage {
-    constructor(private router: Router) {}
+    public gameResultService = inject(GameResultService);
+    private router = inject(Router);
 
-    restart() {
+    goToWelcomePage() {
         this.router.navigate(['/']);
+        this.gameResultService.result.set(null);
     }
 }
