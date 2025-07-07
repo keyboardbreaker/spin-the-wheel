@@ -1,24 +1,24 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Component, signal } from '@angular/core';
+import { SpinnerComponent } from "../../components/spinner/spinner.component";
 
 @Component({
     standalone: true,
     selector: 'app-game',
-    imports: [CommonModule],
+    imports: [ SpinnerComponent],
     template: `
-        <div class="h-screen flex items-center justify-center flex-col gap-6 border-4 border-indigo-500 rounded-lg p-8">
-        <button
-            class="mt-6 px-6 py-2 bg-blue-500 text-white rounded" (click)="goToResult()">
-            Spin the Wheel 
-        </button>
-        </div>
+        <section class="h-screen flex flex-col items-center justify-start md:justify-center gap-6 border-4 border-indigo-500 rounded-lg p-20">
+            <app-spinner [(options)]="myOptions" />
+        </section>
     `
 })
 export class GamePage {
-    constructor(private router: Router) {}
-
-    goToResult() {
-        this.router.navigate(['/result'])
-    }
+    public myOptions = signal<string[]>([
+        'prize 1',
+        'prize 2',
+        'prize 3',
+        'a car',
+        '£100',
+        '£200',
+        'a drink',
+    ]);
 }

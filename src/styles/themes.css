@@ -1,14 +1,17 @@
 :root {
     --bg-color: #ffffff;
     --text-color: #000000;
-    --button-bg: #e0e0e0;
+    --input-border-color: #d1d5db;
+    --button-bg: #e5e7eb;
     --button-text: #000000;
+    --focus-ring-color: #3b82f6;
 }
 
 [data-theme='dark'] {
     --bg-color: #121212;
     --text-color: #ffffff;
-    --button-bg: #333333;
+    --input-border-color: #4b5563;
+    --button-bg: #374151;
     --button-text: #ffffff;
 }
 
@@ -18,7 +21,29 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-button {
+.app-input {
+    @apply w-full max-w-xs p-3 border-2 rounded-lg transition-shadow duration-200 placeholder-gray-500;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-color: var(--input-border-color);
+}
+
+.app-input:focus {
+    @apply outline-none border-transparent;
+    box-shadow: 0 0 0 2px var(--focus-ring-color); /* Equivalent to focus:ring-2 */
+}
+
+.app-button {
+    @apply px-6 py-3 font-semibold rounded-lg shadow-md transition-all duration-200 ease-in-out;
     background-color: var(--button-bg);
     color: var(--button-text);
+}
+
+.app-button:hover {
+    @apply shadow-lg -translate-y-0.5;
+    cursor: pointer;
+}
+
+.app-button:disabled {
+    @apply opacity-50 cursor-not-allowed shadow-none translate-y-0;
 }

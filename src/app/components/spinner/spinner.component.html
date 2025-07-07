@@ -1,0 +1,25 @@
+<div class="relative w-full max-w-[400px] aspect-square flex justify-center items-center">
+  <canvas #wheel class="block w-full h-full"></canvas>
+  <button class="randomSpinWheel" (click)="randomSpinWheel()" [style.background]="currentSector()?.color">
+    {{ spinButtonLabel() }}
+  </button>
+</div>
+
+<div class="flex flex-col items-center justify-center gap-4 p-4 font-sans">
+  @if (!isValidSegmentName(segment())) {
+    <p class="text-red-600 dark:text-red-500 text-sm font-medium">
+      Please enter a valid segment name.
+    </p>
+  }
+  <input type="text" [(ngModel)]="segment" placeholder="eg. Prize 1" class="app-input" />
+  <div class="flex gap-4">
+    <button
+      (click)="spinToSegment(segment())"
+      [disabled]="!isValidSegmentName(segment())"
+      class="app-button"
+    >
+      Spin to Segment
+    </button>
+    <button (click)="randomSpinWheel()" class="app-button">Random Spin</button>
+  </div>
+</div>
