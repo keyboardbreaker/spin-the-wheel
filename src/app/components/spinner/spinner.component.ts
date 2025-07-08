@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, ElementRef, HostListener, computed, effect, inject, input, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameResultService } from '../../services/game-result.service';
 import { FormsModule } from '@angular/forms';
 import confetti from 'canvas-confetti';
 
-interface Sector {
+interface Segment {
   color: string;
   label: string;
 }
@@ -40,7 +40,7 @@ export class SpinnerComponent implements AfterViewInit {
   private determinedTargetAngle = signal<number | null>(null);
 
   // These automatically recalculate when their dependent signals (options, ang) change.
-  sectors = computed<Sector[]>(() => {
+  segments = computed<Segment[]>(() => {
     const opts = this.options();
     return opts.map((label, i) => ({
       color: this.COLORS[i % this.COLORS.length],
@@ -54,20 +54,20 @@ export class SpinnerComponent implements AfterViewInit {
     return seg && this.options().includes(seg); 
   });
 
-  public totalSectors = computed(() => this.sectors().length);
-  private arc = computed(() => this.TAU / this.totalSectors());
+  public totalSegments = computed(() => this.segments().length);
+  private arc = computed(() => this.TAU / this.totalSegments());
   isSpinning = computed(() => this.angVel() > 0.002);
   
   private currentIndex = computed(() => {
-    const total = this.totalSectors();
+    const total = this.totalSegments();
     return total > 0 ? Math.floor(total - (this.ang() / this.TAU) * total) % total : 0;
   });
 
-  currentSector = computed<Sector | undefined>(() => this.sectors()[this.currentIndex()]);
+  currentSegment = computed<Segment | undefined>(() => this.segments()[this.currentIndex()]);
   spinButtonLabel = computed(() => {
     if (this.isSpinning()) {
-      return this.currentSector()?.label ?? '';
-    } else if (this.totalSectors() > 0) {
+      return this.currentSegment()?.label ?? '';
+    } else if (this.totalSegments() > 0) {
       return 'SPIN';
     } else {
       return 'DONE';
@@ -77,9 +77,9 @@ export class SpinnerComponent implements AfterViewInit {
   private router = inject(Router);
   private gameResultService = inject(GameResultService);
   constructor() {
-    // Effect to draw the wheel when sectors change or the canvas is ready.
+    // Effect to draw the wheel when segments change or the canvas is ready.
     effect(() => {
-      // Re-draws the wheel automatically if this.sectors() changes
+      // Re-draws the wheel automatically if this.segments() changes
       this.drawWheel();
     });
 
@@ -126,7 +126,7 @@ export class SpinnerComponent implements AfterViewInit {
   }
   
   randomSpinWheel(): void {
-    if (this.isSpinning() || this.totalSectors() === 0) return;
+    if (this.isSpinning() || this.totalSegments() === 0) return;
     //Math.random() * (max - min) + min, min=0.25, max=0.35 - these produced good spins
     this.angVel.set(Math.random() * (0.35 - 0.25) + 0.25); // Set initial velocity
   }
@@ -135,9 +135,9 @@ export class SpinnerComponent implements AfterViewInit {
     // 1. Find the index of the segment by its name.
     const segmentIndex = this.options().indexOf(segmentName);
 
-    const totalSectors = this.totalSectors();
+    const totalSegments = this.totalSegments();
     // 2. Guard against invalid spins, including if the name wasn't found (index is -1).
-    if (this.isSpinning() || totalSectors === 0 || segmentIndex < 0 || segmentIndex >= totalSectors) {
+    if (this.isSpinning() || totalSegments === 0 || segmentIndex < 0 || segmentIndex >= totalSegments) {
       if (segmentIndex < 0) {
         console.error(`Segment name "${segmentName}" not found.`);
       }
@@ -145,7 +145,7 @@ export class SpinnerComponent implements AfterViewInit {
     }
 
     // 3. Calculate the exact angle for the center of the winning segment.
-    const targetAngle = (this.TAU * (totalSectors - segmentIndex - 0.5)) / totalSectors;
+    const targetAngle = (this.TAU * (totalSegments - segmentIndex - 0.5)) / totalSegments;
       
     // 4. Set the target angle in our new signal.
     this.determinedTargetAngle.set(targetAngle);
@@ -180,13 +180,13 @@ export class SpinnerComponent implements AfterViewInit {
     // Clear previous drawing
     ctx.clearRect(0, 0, dia, dia); 
 
-    this.sectors().forEach((sector, i) => {
+    this.segments().forEach((segment, i) => {
       const ang = arc * i;
       ctx.save();
       
-      // Draw sector wedge
+      // Draw segment wedge
       ctx.beginPath();
-      ctx.fillStyle = sector.color;
+      ctx.fillStyle = segment.color;
       ctx.moveTo(rad, rad);
       ctx.arc(rad, rad, rad, ang, ang + arc);
       ctx.lineTo(rad, rad);
@@ -198,7 +198,7 @@ export class SpinnerComponent implements AfterViewInit {
       ctx.textAlign = 'right';
       ctx.fillStyle = '#fff';
       ctx.font = `bold ${fontSize}px sans-serif`; // Use the dynamic font size
-      ctx.fillText(sector.label, textPositionX, textPositionY);
+      ctx.fillText(segment.label, textPositionX, textPositionY);
       
       ctx.restore();
     });
@@ -207,7 +207,7 @@ export class SpinnerComponent implements AfterViewInit {
   //Called when the wheel stops spinning to process the winner.
   private handleStop(): void {
     const winnerIndex = this.currentIndex();
-    const winner = this.sectors()[winnerIndex];
+    const winner = this.segments()[winnerIndex];
     this.gameResultService.result.set(winner.label);
     setTimeout(() => {
       this.celebrate();

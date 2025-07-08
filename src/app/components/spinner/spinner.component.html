@@ -1,6 +1,6 @@
 <div class="relative w-full max-w-[400px] aspect-square flex justify-center items-center">
   <canvas #wheel class="block w-full h-full"></canvas>
-  <button class="randomSpinWheel" (click)="randomSpinWheel()" [style.background]="currentSector()?.color">
+  <button class="randomSpinWheel" (click)="randomSpinWheel()" [style.background]="currentSegment()?.color">
     {{ spinButtonLabel() }}
   </button>
 </div>
