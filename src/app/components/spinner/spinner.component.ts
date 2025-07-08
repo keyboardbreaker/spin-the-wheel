@@ -19,7 +19,6 @@ interface Sector {
 export class SpinnerComponent implements AfterViewInit {
   // Use required signal input. The parent must provide an array of strings.
   options = input.required<string[]>();
-  optionsChange = output<string[]>();
 
   private readonly COLORS = ['#f82', '#0bf', '#fb0', '#0fb', '#b0f', '#f0b', '#bf0'];
   private readonly FRICTION = 0.995; // 0.995=soft, 0.99=mid, 0.98=hard

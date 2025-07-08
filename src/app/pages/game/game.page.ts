@@ -7,7 +7,7 @@ import { SpinnerComponent } from "../../components/spinner/spinner.component";
     imports: [ SpinnerComponent],
     template: `
         <section class="h-screen flex flex-col items-center justify-start md:justify-center gap-6 border-4 border-indigo-500 rounded-lg p-20">
-            <app-spinner [(options)]="myOptions" />
+            <app-spinner [options]="myOptions()" />
         </section>
     `
 })
