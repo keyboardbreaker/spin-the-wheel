@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, computed, effect, i
 import { Router } from '@angular/router';
 import { GameResultService } from '../../services/game-result.service';
 import { FormsModule } from '@angular/forms';
+import confetti from 'canvas-confetti';
 
 interface Sector {
   color: string;
@@ -204,6 +205,7 @@ export class SpinnerComponent implements AfterViewInit {
     const winner = this.sectors()[winnerIndex];
     this.gameResultService.result.set(winner.label);
     setTimeout(() => {
+      this.celebrate();
       this.router.navigate(['/result']);
     }, 1200);
   }
@@ -231,5 +233,18 @@ export class SpinnerComponent implements AfterViewInit {
 
     // 3. Redraw the wheel on the newly sized canvas
     this.drawWheel();
+  }
+
+  private celebrate(): void {
+    const duration = 3000;
+  
+    confetti({
+      particleCount: 150,
+      spread: 180,
+      origin: { y: 0.6 },
+      colors: ['#FF4500', '#008080', '#FFD700'],
+    });
+  
+    setTimeout(() => confetti.reset(), duration);
   }
 }
