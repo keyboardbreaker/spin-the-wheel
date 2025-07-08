@@ -6,7 +6,7 @@
 </div>
 
 <div class="flex flex-col items-center justify-center gap-4 p-4 font-sans">
-  @if (!isValidSegmentName(segment())) {
+  @if (!isSegmentValid()) {
     <p class="text-red-600 dark:text-red-500 text-sm font-medium">
       Please enter a valid segment name.
     </p>
@@ -15,7 +15,7 @@
   <div class="flex gap-4">
     <button
       (click)="spinToSegment(segment())"
-      [disabled]="!isValidSegmentName(segment())"
+      [disabled]="!isSegmentValid()"
       class="app-button"
       aria-label="Spin to segment"
     >

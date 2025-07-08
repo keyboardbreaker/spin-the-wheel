@@ -49,6 +49,12 @@ export class SpinnerComponent implements AfterViewInit {
     }));
   });
 
+  isSegmentValid = computed(() => {
+    const seg = this.segment();
+    // Ensure segment is not empty and is included in the options
+    return seg && this.options().includes(seg); 
+  });
+
   public totalSectors = computed(() => this.sectors().length);
   private arc = computed(() => this.TAU / this.totalSectors());
   isSpinning = computed(() => this.angVel() > 0.002);
@@ -208,10 +214,6 @@ export class SpinnerComponent implements AfterViewInit {
       this.celebrate();
       this.router.navigate(['/result']);
     }, 1200);
-  }
-
-  isValidSegmentName(segmentName: string):boolean {
-    return this.options().includes(segmentName);
   }
 
   @HostListener('window:resize')
