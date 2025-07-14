@@ -18,7 +18,7 @@ interface Segment {
 })
 export class SpinnerComponent implements AfterViewInit {
   // Use required signal input. The parent must provide an array of strings.
-  options = input.required<string[]>();
+  public options = input.required<string[]>();
 
   private readonly COLORS = ['#f82', '#0bf', '#fb0', '#0fb', '#b0f', '#f0b', '#bf0'];
   private readonly FRICTION = 0.995; // 0.995=soft, 0.99=mid, 0.98=hard
@@ -31,16 +31,13 @@ export class SpinnerComponent implements AfterViewInit {
   // Internal state as signals
   private angVel = signal(0); // Angular velocity
   private ang = signal(0); // Current angle in radians
-  public segment = signal("");
-  segmentName = computed<string | undefined>(() => {
-    return this.options().find((option) => option.toLowerCase() === this.segment().toLowerCase())
-  })
+  public inputSegment = signal("");
 
   // Add this new signal:
   private determinedTargetAngle = signal<number | null>(null);
 
   // These automatically recalculate when their dependent signals (options, ang) change.
-  segments = computed<Segment[]>(() => {
+  private segments = computed<Segment[]>(() => {
     const opts = this.options();
     return opts.map((label, i) => ({
       color: this.COLORS[i % this.COLORS.length],
@@ -48,23 +45,25 @@ export class SpinnerComponent implements AfterViewInit {
     }));
   });
 
-  isSegmentValid = computed(() => {
-    const seg = this.segment();
+  // input validation, that segment exists in options
+  public isSegmentValid = computed(() => {
+    const seg = this.inputSegment();
     // Ensure segment is not empty and is included in the options
     return seg && this.options().includes(seg); 
   });
 
-  public totalSegments = computed(() => this.segments().length);
+  private totalSegments = computed(() => this.segments().length);
+  //This calculates the size (in radians) of each segment
   private arc = computed(() => this.TAU / this.totalSegments());
-  isSpinning = computed(() => this.angVel() > 0.002);
+  private isSpinning = computed(() => this.angVel() > 0.002);
   
   private currentIndex = computed(() => {
     const total = this.totalSegments();
     return total > 0 ? Math.floor(total - (this.ang() / this.TAU) * total) % total : 0;
   });
 
-  currentSegment = computed<Segment | undefined>(() => this.segments()[this.currentIndex()]);
-  spinButtonLabel = computed(() => {
+  public currentSegment = computed<Segment | undefined>(() => this.segments()[this.currentIndex()]);
+  public spinButtonLabel = computed(() => {
     if (this.isSpinning()) {
       return this.currentSegment()?.label ?? '';
     } else if (this.totalSegments() > 0) {
@@ -144,13 +143,13 @@ export class SpinnerComponent implements AfterViewInit {
       return;
     }
 
-    // 3. Calculate the exact angle for the center of the winning segment.
+    // 3. Calculate the exact angle for the center (0.5) of the winning segment.
     const targetAngle = (this.TAU * (totalSegments - segmentIndex - 0.5)) / totalSegments;
       
     // 4. Set the target angle in our new signal.
     this.determinedTargetAngle.set(targetAngle);
 
-    // 5. Add full rotations for visual effect.
+    // 5. Add full rotations for visual effect. 
     const fullSpins = this.TAU * 5;
     const totalRotation = fullSpins + targetAngle;
 
@@ -160,7 +159,7 @@ export class SpinnerComponent implements AfterViewInit {
   }
 
   //Handles drawing the entire wheel canvas.
-  private drawWheel(): void {
+  private drawWheel(): void { //handles repaint through the effect
     const canvas = this.wheelEl()?.nativeElement;
     const ctx = canvas?.getContext('2d');
     if (!ctx) return;

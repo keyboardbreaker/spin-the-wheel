@@ -11,10 +11,10 @@
       Please enter a valid segment name.
     </p>
   }
-  <input type="text" [(ngModel)]="segment" placeholder="eg. Prize 1" class="app-input" aria-label="Find Segment Name" />
+  <input type="text" [(ngModel)]="inputSegment" placeholder="eg. Prize 1" class="app-input" aria-label="Find Segment Name" />
   <div class="flex gap-4">
     <button
-      (click)="spinToSegment(segment())"
+      (click)="spinToSegment(inputSegment())"
       [disabled]="!isSegmentValid()"
       class="app-button"
       aria-label="Spin to segment"
